@@ -283,7 +283,7 @@ class Link(Plugin):
     ) -> Tuple[bool, bool]:
         success = True
         removed = False
-        target = os.path.join(self._context.base_directory(canonical_path=canonical_path), target)
+        target = os.path.normpath(os.path.join(self._context.base_directory(canonical_path=canonical_path), target))
         fullpath = os.path.abspath(os.path.expanduser(path))
         if self._exists(path) and not self._is_link(path) and os.path.realpath(fullpath) == target:
             # Special case: The path is not a symlink but resolves to the target anyway.
@@ -349,7 +349,7 @@ class Link(Plugin):
 
         link_path = os.path.abspath(os.path.expanduser(link_name))
         base_directory = self._context.base_directory(canonical_path=canonical_path)
-        absolute_target = os.path.join(base_directory, target)
+        absolute_target = os.path.normpath(os.path.join(base_directory, target))
         link_name = os.path.normpath(link_name)
         target_path = self._relative_path(absolute_target, link_path) if relative else absolute_target
 

@@ -1835,3 +1835,21 @@ def test_link_error_delete(
 
     stdout, _ = capsys.readouterr()
     assert "Failed to remove" in stdout
+
+def test_link_relink_base_directory_is_idempotent(
+    capsys: pytest.CaptureFixture[str],
+    home: str,
+    dotfiles: Dotfiles,
+    run_dotbot: Callable[..., None],
+) -> None:
+    """Verify that relinking the dotfiles directory itself leaves an existing link alone."""
+
+    dotfiles.write_config([{"link": {"~/.dotfiles": {"path": "", "relink": True}}}])
+    run_dotbot()
+    capsys.readouterr()
+
+    run_dotbot()
+    stdout, _ = capsys.readouterr()
+    assert "Removing" not in stdout
+    assert "Creating" not in stdout
+    assert os.path.samefile(os.path.join(home, ".dotfiles"), dotfiles.directory)
